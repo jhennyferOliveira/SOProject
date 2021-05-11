@@ -1,270 +1,243 @@
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+/*
+    Frame - janela em que a view se encontra
+    Panel - containers que são colocados dentro da view a fim de organizar os componentes
+    JLabel - apresentar uma label na tela
+    *OBS: Para mostrar uma imagem, é necessário criar uma label e adicionar uma ImageIcon a ela, caso não
+    queira mostrar a label é só deixar o texto em branco: " "
 
-
-public class Components extends JFrame implements ActionListener {
-    private ImageIcon tvIcon;
-    private JLabel labelTV;
-    private JLabel labelCanal;
+ */
+public class View extends JFrame implements ActionListener {
+    private JLabel labelIconeTV;
     private JPanel panel;
-    private JPanel cardPanel;
-    private JLabel labelPerson;
-    private JLabel labelPersonSleeping;
-    private ImageIcon personWatchingIcon;
-    private ImageIcon personSleepingIcon;
     private ArrayList<JPanel> cards  = new ArrayList<JPanel>();
-    private ArrayList<JLabel> guestsTimeSleeping  = new ArrayList<JLabel>();
-    private ArrayList<JLabel> guestsTimeWatching  = new ArrayList<JLabel>();
-    private ArrayList<JLabel> guestsFavoriteChannel  = new ArrayList<JLabel>();
-    private JLabel guestNameLabel;
-    private JPanel panelStackInfo;
-    private JLabel channel;
-    private JLabel timeWatching;
-    private ImageIcon timeWatchingIcon;
-    private ImageIcon timeSleepingIcon;
-    private ImageIcon remoteControlIcon;
-    private JLabel timeSleeping;
-    private JLabel timeSleepingLabel;
-    private JLabel timeWatchingLabel;
-    private JLabel channelLabel;
-    private JButton insertGuestButton;
-    JTextField fieldSleepingTime;
-    JTextField fieldWatchingTime;
-    JTextField fieldFavoriteChannel;
-    private int countHospedes;
+    private ArrayList<JLabel> hospedesTempoDormindo  = new ArrayList<JLabel>();
+    private ArrayList<JLabel> hospedesTempoAssistindo  = new ArrayList<JLabel>();
+    private ArrayList<JLabel> hospedesCanalFavorito  = new ArrayList<JLabel>();
+    private ArrayList<JLabel> hospedesId  = new ArrayList<JLabel>();
+    private JButton botaoInserirHospede;
+    public JLabel labelTextoCanal;
+    public JTextField campoTempoDormindo;
+    public JTextField campoTempoAssistindo;
+    public JTextField campoCanalFavorito;
+    public JTextField fieldNumberOfChannels;
+    public JTextField campoId;
+    private int contaHospedes;
+
+    private ImageIcon resizeImage(ImageIcon icone, int width, int height) {
+        Image imagem = icone.getImage();
+        Image novoIconeTV = imagem.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
+        icone = new ImageIcon(novoIconeTV);
+        return icone;
+    }
 
     public void setUpComponents() {
+        // panel que mais externo responsavel por configurar o layout dos cards dos hospedes
         panel = new JPanel();
         panel.setBounds(50, 200, 900, 550);
         panel.setLayout(new GridLayout(2,5,32,32));
-        add(panel);
-        setUpImageTV();
-        setUpLabelCanal();
-        setUpCards();
-        setUpButton();
-        labelTV.add(labelCanal);
+        add(panel); // adding panel into the frame
+        configuraImagemTV();
+        configuraLabelCanal();
+        configuraCards();
+        configuraBotaoInserirHospede();
+        labelIconeTV.add(labelTextoCanal);
     }
 
-    public void setUpImageTV() {
-        tvIcon = new ImageIcon(getClass().getResource("/assets/tv.png"));
-        Image image = tvIcon.getImage();
-        Image newTvImage = image.getScaledInstance(150, 140,  java.awt.Image.SCALE_SMOOTH);
-        tvIcon = new ImageIcon(newTvImage);
-        labelTV = new JLabel();
-        labelTV.setText("");
-        labelTV.setBounds(450,-10,200,200);
-        labelTV.setIcon(tvIcon);
-        add(labelTV);
-
+    public void configuraImagemTV() {
+        ImageIcon iconeTV = new ImageIcon(getClass().getResource("/assets/tv.png"));
+        iconeTV = resizeImage(iconeTV,150,140);
+        labelIconeTV = new JLabel();
+        labelIconeTV.setText("");
+        labelIconeTV.setBounds(450,-10,200,200);
+        labelIconeTV.setIcon(iconeTV);
+        add(labelIconeTV);
     }
 
-    public void setUpLabelCanal() {
-        labelCanal = new JLabel();
-        labelCanal.setText("5");
-        labelCanal.setLayout(null);
-        labelCanal.setBounds(47,100,20,30);
-        labelCanal.setFont(labelCanal.getFont().deriveFont(28f));
-        labelCanal.setVisible(false);
-        add(labelCanal);
+    public void configuraLabelCanal() {
+        labelTextoCanal = new JLabel();
+        labelTextoCanal.setText("5");
+        labelTextoCanal.setLayout(null);
+        labelTextoCanal.setBounds(47,100,20,30);
+        labelTextoCanal.setFont(labelTextoCanal.getFont().deriveFont(28f));
+        labelTextoCanal.setVisible(false);
+        add(labelTextoCanal);
     }
 
-
-    public void setUpCards() {
-        for (int i = 0; i<10; i++) {
-            cardPanel = new JPanel();
+    public void configuraCards() {
+        for (int i = 0; i<10; i++) { // cria todos os cards da tela
+            JPanel cardPanel = new JPanel();
             cardPanel.setLayout(null);
             cardPanel.setSize(101, 120);
             cardPanel.setBackground(new Color(0xD4D2D2));
             cardPanel.setName(Integer.toString(i + 1));
             cardPanel.setVisible(true);
-            cardPanel.add(setUpDormindo(i));
-//            cardPanel.add(setUpPersonWatching(i));
-            cardPanel.add(setUpGuestNameLabel(i));
-            cardPanel.add(setUpInfoStack());
-            cardPanel.setVisible(false);
-            cards.add(cardPanel);
-            panel.add(cardPanel);
-
+            cardPanel.add(configuraImagemHospedeDormindo(i));
+            cardPanel.add(configuraStackDeInformacoesDoHospede()); // adiciona a stack que contem canal preferido, tempo assist, etc ao cardPanel
+            cardPanel.setVisible(false); // deixa os cards invisiveis, quando o usuario digitar um novo hospede ele fica visivel
+            cards.add(cardPanel); // adiciona o card em um array para que possamos acessa-lo futuramente
+            panel.add(cardPanel); // adiciona o cardPanel no panel que foi criado anteriormente na funcao setUpComponents() para organizar o layout
         }
     }
 
+    // esse i serve para que depois seja possivel acessar o JLabel inserido no array, em que cada posicao corresponde a um hospede
+    // essa funcao apenas retorna a imagem da pessoa dormindo ao cardPanel
+    public JLabel configuraImagemHospedeDormindo(int i) {
+        JLabel labelIconePessoaDormindo = new JLabel();
+        ImageIcon iconePessoaDormindo = new ImageIcon(getClass().getResource("/assets/dormindo2.png"));
+        iconePessoaDormindo = resizeImage(iconePessoaDormindo, 94,92);
+        labelIconePessoaDormindo.setText("");
+        labelIconePessoaDormindo.setBounds(44,7,94,92);
+        labelIconePessoaDormindo.setIcon(iconePessoaDormindo);
+        labelIconePessoaDormindo.setName(Integer.toString(i+1));
+        return labelIconePessoaDormindo;
 
-    public JLabel setUpPersonWatching(int i){
-        labelPerson = new JLabel();
-        personWatchingIcon = new ImageIcon(getClass().getResource("/assets/assistindo.png"));
-        Image image = personWatchingIcon.getImage();
-        Image newPersonImage = image.getScaledInstance(64, 72,  java.awt.Image.SCALE_SMOOTH);
-        personWatchingIcon = new ImageIcon(newPersonImage);
-        labelPerson.setText("");
-        labelPerson.setBounds(43,25,64,72);
-        labelPerson.setIcon(personWatchingIcon);
-        labelPerson.setName(Integer.toString(i+1));
-//        personImageLabels.add(labelPerson);
-        return  labelPerson;
-
-
+        // tamanho imagem pessoa assistindo: width: 64, height: 72
+        // posicao imagem pessoa assistindo: x:43, y:25, width:64, height:72)
     }
 
-    public JLabel setUpDormindo(int i) {
-
-        labelPersonSleeping = new JLabel();
-        personSleepingIcon = new ImageIcon(getClass().getResource("/assets/dormindo2.png"));
-        Image image = personSleepingIcon.getImage();
-        Image newPersonImage = image.getScaledInstance(94, 92,  Image.SCALE_SMOOTH);
-        personSleepingIcon = new ImageIcon(newPersonImage);
-        labelPersonSleeping.setText("");
-        labelPersonSleeping.setBounds(44,7,94,92);
-        labelPersonSleeping.setIcon(personSleepingIcon);
-        labelPersonSleeping.setName(Integer.toString(i+1));
-        return  labelPersonSleeping;
-
-    }
-
-    public JLabel setUpGuestNameLabel(int i) {
-        guestNameLabel = new JLabel();
-        guestNameLabel.setText("H" + Integer.toString(i+1) );
-        guestNameLabel.setLayout(null);
-        guestNameLabel.setBounds(62,105,50,30);
-        guestNameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        guestNameLabel.setFont(guestNameLabel.getFont().deriveFont(18f));
-        return guestNameLabel;
-    }
-
-    public JPanel setUpInfoStack() {
-        panelStackInfo = new JPanel();
-        panelStackInfo.setBounds(30, 130, 100, 120);
-        panelStackInfo.setLayout(new GridLayout(3,2,21,10));
+    // monta a stack de informacao do card
+    public JPanel configuraStackDeInformacoesDoHospede() {
+        JPanel panelStackInfo = new JPanel();
+        panelStackInfo.setBounds(40, 105, 100, 140);
+        panelStackInfo.setLayout(new GridLayout(4,2,21,10)); // configura o layout da informacao do hospede em 4 linhas e 2 colunas, espaco horizontal de 21 e vertical de 10
         panelStackInfo.setBackground(new Color(0xD4D2D2));
 
-        timeWatchingIcon = new ImageIcon(getClass().getResource("/assets/tvGuest.png"));
-        Image timeWathingImage = timeWatchingIcon.getImage();
-        Image newTimeWatchingImage = timeWathingImage.getScaledInstance(28, 28,  Image.SCALE_SMOOTH);
-        timeWatchingIcon = new ImageIcon(newTimeWatchingImage);
+        // cria os icones
+        ImageIcon iconeId = new ImageIcon(getClass().getResource("/assets/id-pass.png"));
+        iconeId = resizeImage(iconeId, 27,24);
 
-        remoteControlIcon = new ImageIcon(getClass().getResource("/assets/remoteControl.png"));
-        Image controlImage = remoteControlIcon.getImage();
-        Image newControlImage = controlImage.getScaledInstance(24, 30,  Image.SCALE_SMOOTH);
-        remoteControlIcon = new ImageIcon(newControlImage);
+        ImageIcon iconeTempoAssistindo = new ImageIcon(getClass().getResource("/assets/tvGuest.png"));
+        iconeTempoAssistindo = resizeImage(iconeTempoAssistindo, 27,24);
 
-        timeSleepingIcon = new ImageIcon(getClass().getResource("/assets/sleepingIcon.png"));
-        Image timeSleepingImage = timeSleepingIcon.getImage();
-        Image newTimeSleepingImage = timeSleepingImage.getScaledInstance(25, 25,  Image.SCALE_SMOOTH);
-        timeSleepingIcon = new ImageIcon(newTimeSleepingImage);
+        ImageIcon iconeControleRemoto = new ImageIcon(getClass().getResource("/assets/remoteControl.png"));
+        iconeControleRemoto = resizeImage(iconeControleRemoto, 20,30);
 
-        // labels that have image icon
-        timeWatching = new JLabel();
-        timeWatching.setText("");
-        timeWatching.setHorizontalTextPosition(JLabel.CENTER);
-        timeWatching.setIcon(timeWatchingIcon);
+        ImageIcon iconeTempoDormindo = new ImageIcon(getClass().getResource("/assets/sleepingIcon.png"));
+        iconeTempoDormindo = resizeImage(iconeTempoDormindo, 28,28);
 
-        timeSleeping = new JLabel();
-        timeSleeping.setText("");
-        timeSleeping.setHorizontalTextPosition(JLabel.CENTER);
-        timeSleeping.setIcon(timeSleepingIcon);
+        // adiciona os icones a label para que possam ser mostrados na tela, labels apenas para apresentar as imagens
+        JLabel labelIconeId = new JLabel();
+        labelIconeId.setText("");
+        labelIconeId.setHorizontalTextPosition(JLabel.CENTER);
+        labelIconeId.setIcon(iconeId);
 
+        JLabel labelIconeTempoAssistindo = new JLabel();
+        labelIconeTempoAssistindo.setText("");
+        labelIconeTempoAssistindo.setHorizontalTextPosition(JLabel.CENTER);
+        labelIconeTempoAssistindo.setIcon(iconeTempoAssistindo);
 
-        channel = new JLabel();
-        channel.setText("");
-        channel.setHorizontalTextPosition(JLabel.CENTER);
-        channel.setIcon(remoteControlIcon);
+        JLabel labelIconeTempoDormindo = new JLabel();
+        labelIconeTempoDormindo.setText("");
+        labelIconeTempoDormindo.setHorizontalTextPosition(JLabel.CENTER);
+        labelIconeTempoDormindo.setIcon(iconeTempoDormindo);
 
-        // labels without image
-        channelLabel = new JLabel();
-        channelLabel.setText("2");
-        channelLabel.setFont(channelLabel.getFont().deriveFont(18f));
-        guestsFavoriteChannel.add(channelLabel);
+        JLabel labelIconeControleRemoto = new JLabel();
+        labelIconeControleRemoto.setText("");
+        labelIconeControleRemoto.setHorizontalTextPosition(JLabel.CENTER);
+        labelIconeControleRemoto.setIcon(iconeControleRemoto);
 
-        timeWatchingLabel = new JLabel();
-        timeWatchingLabel.setText("25");
-        timeWatchingLabel.setFont(timeWatchingLabel.getFont().deriveFont(18f));
-        guestsTimeWatching.add(timeWatchingLabel);
+        // configura labels que mostram o texto relacionado a cada icone
+        JLabel labelTextoId = new JLabel();
+        labelTextoId.setText("2");
+        labelTextoId.setFont(labelTextoId.getFont().deriveFont(18f));
+        hospedesId.add(labelTextoId);
 
-        timeSleepingLabel = new JLabel();
-        timeSleepingLabel.setText("30");
-        timeSleepingLabel.setFont(timeSleepingLabel.getFont().deriveFont(18f));
-        guestsTimeSleeping.add(timeSleepingLabel);
+        JLabel labelTextoCanal = new JLabel();
+        labelTextoCanal.setText("2");
+        labelTextoCanal.setFont(labelTextoCanal.getFont().deriveFont(18f));
+        hospedesCanalFavorito.add(labelTextoCanal);
 
-        // adding elements to stack
-        panelStackInfo.add(channel);
-        panelStackInfo.add(channelLabel);
-        panelStackInfo.add(timeWatching);
-        panelStackInfo.add(timeWatchingLabel);
-        panelStackInfo.add(timeSleeping);
-        panelStackInfo.add(timeSleepingLabel);
+        JLabel labelTextoTempoAssistindo = new JLabel();
+        labelTextoTempoAssistindo.setText("25");
+        labelTextoTempoAssistindo.setFont(labelTextoTempoAssistindo.getFont().deriveFont(18f));
+        hospedesTempoAssistindo.add(labelTextoTempoAssistindo);
 
+        JLabel labelTextoTempoDormindo = new JLabel();
+        labelTextoTempoDormindo.setText("30");
+        labelTextoTempoDormindo.setFont(labelTextoTempoDormindo.getFont().deriveFont(18f));
+        hospedesTempoDormindo.add(labelTextoTempoDormindo);
+
+        // adiciona os icones e labels ao panel stack
+        panelStackInfo.add(labelIconeId);
+        panelStackInfo.add(labelTextoId);
+        panelStackInfo.add(labelIconeControleRemoto);
+        panelStackInfo.add(labelTextoCanal);
+        panelStackInfo.add(labelIconeTempoAssistindo);
+        panelStackInfo.add(labelTextoTempoAssistindo);
+        panelStackInfo.add(labelIconeTempoDormindo);
+        panelStackInfo.add(labelTextoTempoDormindo);
         return panelStackInfo;
     }
 
-    public void setUpButton(){
-        insertGuestButton = new JButton();
-        insertGuestButton.setBounds(400, 850, 200, 50);
-        insertGuestButton.setText("Inserir Hóspede");
-        insertGuestButton.addActionListener(this);
-        add(insertGuestButton);
+    public void configuraBotaoInserirHospede(){
+        botaoInserirHospede = new JButton();
+        botaoInserirHospede.setBounds(400, 850, 200, 50);
+        botaoInserirHospede.setText("Inserir Hóspede");
+        botaoInserirHospede.addActionListener(this);
+        add(botaoInserirHospede);
     }
 
+    // acao do botao de inserir hospede
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == insertGuestButton){
-            if (countHospedes<10){
-                showForm();
-                showData();
-            } else {
-                showErrorMessage();
+        if (e.getSource() == botaoInserirHospede){  // se quem enviou a acao foi o insertGuestButton
+            if (contaHospedes<10){
+                mostraFormulario(); // mostra o formulario em que o usuario pode cadastrar os dados do hospede
+                mostraDadosObtidosPeloFormularioNoCard(); // mostra o card com as informacoes que o usuario inseriu
+            } else { // caso o usuario tente cadastrar mais de 10 hospedes sera exibida uma mensagem dizendo que ele ja atingiu o limite maximo de hospedes.
+                mostraMensagemDeErro();
             }
-
         }
-
-    };
-
-    public void showErrorMessage() {
-        JOptionPane.showMessageDialog(null,"Número máximo de hóspedes atingido.", "Erro ao cadastrar Hóspede", JOptionPane.PLAIN_MESSAGE );
     }
 
-    public void showForm() {
-        countHospedes++;
-        fieldSleepingTime = new JTextField();
-        fieldWatchingTime = new JTextField();
-        fieldFavoriteChannel = new JTextField();
+    // mensagem de erro quando o usuario tenta cadastrar mais de 10 hospedes
+    public void mostraMensagemDeErro() {
+        JOptionPane.showMessageDialog(null,"Número máximo de hóspedes atingido.",
+                "Erro ao cadastrar Hóspede", JOptionPane.PLAIN_MESSAGE );
+    }
 
+    // mostra o formulario em que o usuario pode cadastrar os dados do hospede
+    public void mostraFormulario() {
+        contaHospedes++; // contagem para nao deixar o usuario cadastrar mais que 10 usuarios
+        campoId = new JTextField();
+        campoTempoDormindo = new JTextField();
+        campoTempoAssistindo = new JTextField();
+        campoCanalFavorito = new JTextField();
         Object[] fields = {
-            "Tempo assistindo", fieldWatchingTime,
-                "Tempo dormindo", fieldSleepingTime,
-                "Canal Favorito", fieldFavoriteChannel
+                "id", campoId,
+                "Canal Favorito", campoCanalFavorito,
+                "Tempo assistindo", campoTempoAssistindo,
+                "Tempo dormindo", campoTempoDormindo,
         };
-
         JOptionPane.showConfirmDialog(null, fields,"Informacões do hóspede", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        tvThread.criaHospede();
     }
 
-    public void showData() {
-        JPanel guest = cards.get(countHospedes-1);
-        guest.setVisible(true);
-
-        JLabel guestChannel = guestsFavoriteChannel.get(countHospedes-1);
-        guestChannel.setText(fieldFavoriteChannel.getText());
-
-        JLabel guestTimeSleeping = guestsTimeSleeping.get(countHospedes-1);
-        guestTimeSleeping.setText(fieldSleepingTime.getText());
-
-        JLabel guestTimeWatching = guestsTimeWatching.get(countHospedes-1);
-        guestTimeWatching.setText(fieldWatchingTime.getText());
-
+    // apresenta o formulario para o usuario adicionar o numero de canais
+    public void mostraFormularioNumeroDeCanais() {
+        fieldNumberOfChannels = new JTextField();
+        Object[] fields = {
+                "Número de canais", fieldNumberOfChannels,
+        };
+        JOptionPane.showConfirmDialog(null, fields,"Quantidade de canais", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static void main(String[] args) {
-        Components gui = new Components();
-        gui.setLayout(null);
-        gui.setUpComponents();
-        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gui.setVisible(true);
-        gui.setSize(1000, 1000);
-        gui.setResizable(false);
-
+    // mostra o card na tela com todas as informacoes que foram inseridas pelo usuario
+    public void mostraDadosObtidosPeloFormularioNoCard() {
+        JPanel cardHospede = cards.get(contaHospedes-1);
+        cardHospede.setVisible(true);
+        JLabel canalHospede = hospedesCanalFavorito.get(contaHospedes-1);
+        canalHospede.setText(campoCanalFavorito.getText());
+        JLabel tempoDormindo = hospedesTempoDormindo.get(contaHospedes-1);
+        tempoDormindo.setText(campoTempoDormindo.getText());
+        JLabel tempoAssistindo = hospedesTempoAssistindo.get(contaHospedes-1);
+        tempoAssistindo.setText(campoTempoAssistindo.getText());
+        JLabel id = hospedesId.get(contaHospedes-1);
+        id.setText(campoId.getText());
     }
-    
 }
