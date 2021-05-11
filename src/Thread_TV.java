@@ -1,6 +1,6 @@
-//import java.util.Scanner;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.concurrent.Semaphore;
 
 class tvThread  {
@@ -66,23 +66,23 @@ class tvThread  {
         }
 
         void simula_assistir(int tempo) {
-            System.out.printf("%s Est√° assistindo\n", this.id);
+        	gui.addLog(this.id + " Est· assistindo.");
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_assistir * 1000) {
                 // CPU-BOUND
             };
             int final_time = (int)((System.currentTimeMillis() - time)/1000);
-            System.out.printf("%s assitiu por %d segundos\n", this.id, final_time);
+            gui.addLog(String.format("%s assitiu por %d segundos", this.id, final_time));
         }
 
         void simula_descansar(int tempo) {
-            System.out.printf("%s Est√° descansando\n", this.id);
+            gui.addLog(String.format("%s Est· descansando", this.id));
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_descansar * 1000) {
                 // CPU-BOUND
             };
             int final_time = (int)((System.currentTimeMillis() - time)/1000);
-            System.out.printf("%s descansou por %d segundos\n", this.id, final_time);
+            gui.addLog(String.format("%s descansou por %d segundos", this.id, final_time));
         }
 
         void assistir() {
@@ -119,20 +119,7 @@ class tvThread  {
         }
     }
 
-    public static void main(String[] args) {
-        gui = new View();
-        gui.mostraFormularioNumeroDeCanais();
-        gui.setLayout(null);
-        gui.setUpComponents();
-        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gui.setVisible(true);
-        gui.setSize(1000, 1000);
-        gui.setResizable(false);
 
-        n_canais = Integer.parseInt(gui.fieldNumberOfChannels.getText());
-        init_reqs();
-
-    }
 
     public static void criaHospede() {
         String identificador = gui.campoId.getText();
@@ -143,6 +130,24 @@ class tvThread  {
         hospede.setPriority(1);
         hospede.start();
         hospedes.add(hospede);
+    }
+    
+    public static void main(String[] args) {
+        gui = new View();
+        int resposta = gui.mostraFormularioNumeroDeCanais();
+        if (resposta == -1) return;
+        n_canais = resposta;
+        gui.setLayout(null);
+        gui.setUpComponents();
+        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gui.setVisible(true);
+        gui.setSize(1000, 1000);
+        gui.setLocationRelativeTo( null );
+        gui.setResizable(false);
+
+        n_canais = Integer.parseInt(gui.fieldNumberOfChannels.getText());
+        init_reqs();
+
     }
 
 }

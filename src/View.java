@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +16,9 @@ import java.util.ArrayList;
 public class View extends JFrame implements ActionListener {
     private JLabel labelIconeTV;
     private JPanel panel;
+    private JFrame logFrame;
+    private JScrollPane logScrollPane;
+    private JTextArea logTextArea;
     private ArrayList<JPanel> cards  = new ArrayList<JPanel>();
     private ArrayList<JLabel> hospedesTempoDormindo  = new ArrayList<JLabel>();
     private ArrayList<JLabel> hospedesTempoAssistindo  = new ArrayList<JLabel>();
@@ -34,13 +39,39 @@ public class View extends JFrame implements ActionListener {
         icone = new ImageIcon(novoIconeTV);
         return icone;
     }
+    
+    public void setUpLog() {
+        logTextArea = new JTextArea();
+       
+        logFrame = new JFrame("LOG DAS THREADS");
+        logFrame.setLayout(null);
+        logFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        logFrame.setVisible(true);
+        logFrame.setBounds(0, 0, 400, 600);
+        logFrame.setResizable(true);
+  
+        logTextArea.setBounds(50, 50, 300, 300);
+        logTextArea.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) logTextArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        
+        logScrollPane = new JScrollPane(logTextArea);
+        logScrollPane.setBounds(50, 50, 300, 500);
+        logFrame.add(logScrollPane);
+    }
+    
+    public void addLog(String text) {
+    	logTextArea.append("- " + text + "\n");
+    }
 
     public void setUpComponents() {
         // panel que mais externo responsavel por configurar o layout dos cards dos hospedes
         panel = new JPanel();
+        this.setUpLog();
         panel.setBounds(50, 200, 900, 550);
         panel.setLayout(new GridLayout(2,5,32,32));
         add(panel); // adding panel into the frame
+  
         configuraImagemTV();
         configuraLabelCanal();
         configuraCards();
@@ -219,12 +250,29 @@ public class View extends JFrame implements ActionListener {
     }
 
     // apresenta o formulario para o usuario adicionar o numero de canais
-    public void mostraFormularioNumeroDeCanais() {
-        fieldNumberOfChannels = new JTextField();
-        Object[] fields = {
-                "NÃºmero de canais", fieldNumberOfChannels,
-        };
-        JOptionPane.showConfirmDialog(null, fields,"Quantidade de canais", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    public int mostraFormularioNumeroDeCanais() {
+    	final int BAD_INPUT = -2;
+    	int channel = 0;
+    	do {
+    		fieldNumberOfChannels = new JTextField();
+    		Object[] fields = {
+    				"Número de canais (<= 10)", fieldNumberOfChannels,
+    		};
+    		int botao = JOptionPane.showConfirmDialog(null, fields,"Quantidade de canais", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    		if (botao == JOptionPane.OK_OPTION) {
+    			String channelStr = fieldNumberOfChannels.getText();
+    			channelStr = channelStr.replaceAll("\\s","");
+    			try {
+    				channel = Integer.parseInt(channelStr);
+    				if (channel < 1 || channel > 10) channel = BAD_INPUT;
+    			} catch (NumberFormatException e) {
+    				channel = BAD_INPUT;
+    			}
+    		} else if (botao == JOptionPane.CANCEL_OPTION || botao == JOptionPane.CLOSED_OPTION) {
+    			channel = -1;
+    		}
+    	} while (channel == BAD_INPUT);
+        return channel;
     }
 
     // mostra o card na tela com todas as informacoes que foram inseridas pelo usuario
@@ -240,4 +288,5 @@ public class View extends JFrame implements ActionListener {
         JLabel id = hospedesId.get(contaHospedes-1);
         id.setText(campoId.getText());
     }
+
 }
