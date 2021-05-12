@@ -28,6 +28,7 @@ class tvThread  {
 
     static class Hospede extends Thread {
         private String id;
+        private int position;
         private int canal_favorito;
         private int tempo_assistir;
         private int tempo_descansar;
@@ -37,6 +38,7 @@ class tvThread  {
             this.canal_favorito = canal_favorito;
             this.tempo_assistir = tempo_assistir;
             this.tempo_descansar = tempo_descansar;
+            this.position = hospedes.size();
         }
 
         void mudar_canal() {
@@ -69,7 +71,11 @@ class tvThread  {
         	gui.addLog(this.id + " Está assistindo.");
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_assistir * 1000) {
-                // CPU-BOUND
+            	long time2 = System.currentTimeMillis();
+            	while (System.currentTimeMillis() - time2 < 300) {};
+            	gui.setImage(this.position, "/assets/assistindo1.png");            		
+            	while (System.currentTimeMillis() - time2 < 600) {};
+            	gui.setImage(this.position, "/assets/assistindo2.png");
             };
             int final_time = (int)((System.currentTimeMillis() - time)/1000);
             gui.addLog(String.format("%s assitiu por %d segundos", this.id, final_time));
@@ -79,7 +85,11 @@ class tvThread  {
             gui.addLog(String.format("%s Está descansando", this.id));
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_descansar * 1000) {
-                // CPU-BOUND
+            	long time2 = System.currentTimeMillis();
+            	while (System.currentTimeMillis() - time2 < 300) {};
+            	gui.setImage(this.position, "/assets/dormindo2.png");            		
+            	while (System.currentTimeMillis() - time2 < 600) {};
+            	gui.setImage(this.position, "/assets/dormindo1.png");
             };
             int final_time = (int)((System.currentTimeMillis() - time)/1000);
             gui.addLog(String.format("%s descansou por %d segundos", this.id, final_time));
@@ -145,7 +155,6 @@ class tvThread  {
         gui.setLocationRelativeTo( null );
         gui.setResizable(false);
 
-        n_canais = Integer.parseInt(gui.fieldNumberOfChannels.getText());
         init_reqs();
 
     }

@@ -24,6 +24,7 @@ public class View extends JFrame implements ActionListener {
     private ArrayList<JLabel> hospedesTempoAssistindo  = new ArrayList<JLabel>();
     private ArrayList<JLabel> hospedesCanalFavorito  = new ArrayList<JLabel>();
     private ArrayList<JLabel> hospedesId  = new ArrayList<JLabel>();
+    private ArrayList<JLabel> hospedesLabels  = new ArrayList<JLabel>();
     private JButton botaoInserirHospede;
     public JLabel labelTextoCanal;
     public JTextField campoTempoDormindo;
@@ -61,7 +62,7 @@ public class View extends JFrame implements ActionListener {
     }
     
     public void addLog(String text) {
-    	logTextArea.append("- " + text + "\n");
+    	logTextArea.append(" - " + text + "\n");
     }
 
     public void setUpComponents() {
@@ -125,11 +126,37 @@ public class View extends JFrame implements ActionListener {
         labelIconePessoaDormindo.setBounds(44,7,94,92);
         labelIconePessoaDormindo.setIcon(iconePessoaDormindo);
         labelIconePessoaDormindo.setName(Integer.toString(i+1));
+        hospedesLabels.add(labelIconePessoaDormindo);
         return labelIconePessoaDormindo;
 
         // tamanho imagem pessoa assistindo: width: 64, height: 72
         // posicao imagem pessoa assistindo: x:43, y:25, width:64, height:72)
     }
+    
+    public JLabel configuraImagemHospedeAcordado(int i) {
+        JLabel labelIconePessoaAcordada = new JLabel();
+        ImageIcon iconePessoaAcordada = new ImageIcon(getClass().getResource("/assets/assistindo2.png"));
+        iconePessoaAcordada = resizeImage(iconePessoaAcordada, 94,92);
+        labelIconePessoaAcordada.setText("");
+        labelIconePessoaAcordada.setBounds(44,7,94,92);
+        labelIconePessoaAcordada.setIcon(iconePessoaAcordada);
+        labelIconePessoaAcordada.setName(Integer.toString(i+1));
+        return labelIconePessoaAcordada;
+
+        // tamanho imagem pessoa assistindo: width: 64, height: 72
+        // posicao imagem pessoa assistindo: x:43, y:25, width:64, height:72)
+    }
+    
+    public void setImage(int position, String source) {
+        ImageIcon icone = new ImageIcon(getClass().getResource(source));
+        icone = resizeImage(icone, 94, 92);
+    	hospedesLabels.get(position).setIcon(icone);
+    }
+    
+    public void setCardBackground(int position, Color color) {
+    	cards.get(position).setBackground(color);
+    }
+    
 
     // monta a stack de informacao do card
     public JPanel configuraStackDeInformacoesDoHospede() {
