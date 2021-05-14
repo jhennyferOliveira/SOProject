@@ -156,7 +156,12 @@ public class View extends JFrame implements ActionListener {
     public void setCardBackground(int position, Color color) {
     	cards.get(position).setBackground(color);
     }
-    
+
+    public void setChannelLabel(int channel) {
+    	this.labelTextoCanal.setText(String.valueOf(channel));
+    	this.labelTextoCanal.setVisible(true);
+    	this.labelTextoCanal.repaint();
+    }
 
     // monta a stack de informacao do card
     public JPanel configuraStackDeInformacoesDoHospede() {
@@ -283,7 +288,7 @@ public class View extends JFrame implements ActionListener {
     	do {
     		fieldNumberOfChannels = new JTextField();
     		Object[] fields = {
-    				"Número de canais (<= 10)", fieldNumberOfChannels,
+    				"Número de canais", fieldNumberOfChannels,
     		};
     		int botao = JOptionPane.showConfirmDialog(null, fields,"Quantidade de canais", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
     		if (botao == JOptionPane.OK_OPTION) {

@@ -14,24 +14,12 @@ class tvThread  {
     public static ArrayList<Hospede> hospedes  = new ArrayList<Hospede>();
     public static View gui;
 
-    static void down(Semaphore s) {
-        try {
-            s.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void up(Semaphore s) {
-        s.release();
-    }
-
     static class Hospede extends Thread {
         private String id;
-        private int position;
         private int canal_favorito;
         private int tempo_assistir;
         private int tempo_descansar;
+        private int position; // Id interno para fins de interface.
 
         public Hospede (String id, int canal_favorito, int tempo_assistir, int tempo_descansar) {
             this.id = id;
@@ -42,29 +30,48 @@ class tvThread  {
         }
 
         void mudar_canal() {
-            down(mutex);
-            int fav_canal = this.canal_favorito - 1;
+            try {
+				mutex.acquire();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+            int fav_canal = this.canal_favorito - 1; // Para acesso na array de requisições
             if (canal_atual != this.canal_favorito) {
                 if (requisicao_canal[fav_canal] == 0) {
                     requisicao_canal[fav_canal] += 1;
-                    up(mutex);
-                    down(tv);
-                    down(mutex);
+                    mutex.release();
+                    try {
+						tv.acquire();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+                    
+                    try {
+        				mutex.acquire();
+        			} catch (InterruptedException e1) {
+        				e1.printStackTrace();
+        			}
                     canal_atual = this.canal_favorito;
-                    gui.labelTextoCanal.setText(String.valueOf(canal_atual));
-                    gui.labelTextoCanal.setVisible(true);
-                    gui.labelTextoCanal.repaint();
+                    gui.setChannelLabel(canal_atual);
                     quant_requisicoes[fav_canal].release(requisicao_canal[fav_canal] - 1);
                     requisicao_canal[fav_canal] = 0;
                 }
                 else {
                     requisicao_canal[fav_canal] += 1;
-                    up(mutex);
-                    down(quant_requisicoes[fav_canal]);
-                    down(mutex);
+                    mutex.release();
+                    try {
+						quant_requisicoes[fav_canal].acquire();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+                    try {
+						mutex.acquire();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
                 }
             }
-            up(mutex);
+            mutex.release();
         }
 
         void simula_assistir(int tempo) {
@@ -99,10 +106,14 @@ class tvThread  {
             mudar_canal();
             quant_assistindo += 1;
             simula_assistir(this.tempo_assistir);
-            down(mutex);
+            try {
+				mutex.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
             quant_assistindo -= 1;
-            if (quant_assistindo == 0) up(tv);
-            up(mutex);
+            if (quant_assistindo == 0) tv.release();;
+            mutex.release();
         }
 
 
