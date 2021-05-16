@@ -108,7 +108,7 @@ public class View extends JFrame implements ActionListener {
             cardPanel.setBackground(new Color(0xD4D2D2));
             cardPanel.setName(Integer.toString(i + 1));
             cardPanel.setVisible(true);
-            cardPanel.add(configuraImagemHospedeDormindo(i));
+            cardPanel.add(configuraImagemHospedeDormindo());
             cardPanel.add(configuraStackDeInformacoesDoHospede()); // adiciona a stack que contem canal preferido, tempo assist, etc ao cardPanel
             cardPanel.setVisible(false); // deixa os cards invisiveis, quando o usuario digitar um novo hospede ele fica visivel
             cards.add(cardPanel); // adiciona o card em um array para que possamos acessa-lo futuramente
@@ -118,33 +118,15 @@ public class View extends JFrame implements ActionListener {
 
     // esse i serve para que depois seja possivel acessar o JLabel inserido no array, em que cada posicao corresponde a um hospede
     // essa funcao apenas retorna a imagem da pessoa dormindo ao cardPanel
-    public JLabel configuraImagemHospedeDormindo(int i) {
+    public JLabel configuraImagemHospedeDormindo() {
         JLabel labelIconePessoaDormindo = new JLabel();
         ImageIcon iconePessoaDormindo = new ImageIcon(getClass().getResource("/assets/dormindo2.png"));
         iconePessoaDormindo = resizeImage(iconePessoaDormindo, 94,92);
         labelIconePessoaDormindo.setText("");
         labelIconePessoaDormindo.setBounds(44,7,94,92);
         labelIconePessoaDormindo.setIcon(iconePessoaDormindo);
-        labelIconePessoaDormindo.setName(Integer.toString(i+1));
         hospedesLabels.add(labelIconePessoaDormindo);
         return labelIconePessoaDormindo;
-
-        // tamanho imagem pessoa assistindo: width: 64, height: 72
-        // posicao imagem pessoa assistindo: x:43, y:25, width:64, height:72)
-    }
-    
-    public JLabel configuraImagemHospedeAcordado(int i) {
-        JLabel labelIconePessoaAcordada = new JLabel();
-        ImageIcon iconePessoaAcordada = new ImageIcon(getClass().getResource("/assets/assistindo2.png"));
-        iconePessoaAcordada = resizeImage(iconePessoaAcordada, 94,92);
-        labelIconePessoaAcordada.setText("");
-        labelIconePessoaAcordada.setBounds(44,7,94,92);
-        labelIconePessoaAcordada.setIcon(iconePessoaAcordada);
-        labelIconePessoaAcordada.setName(Integer.toString(i+1));
-        return labelIconePessoaAcordada;
-
-        // tamanho imagem pessoa assistindo: width: 64, height: 72
-        // posicao imagem pessoa assistindo: x:43, y:25, width:64, height:72)
     }
     
     public void setImage(int position, String source) {
@@ -288,7 +270,7 @@ public class View extends JFrame implements ActionListener {
     	do {
     		fieldNumberOfChannels = new JTextField();
     		Object[] fields = {
-    				"Número de canais", fieldNumberOfChannels,
+    				"Nï¿½mero de canais", fieldNumberOfChannels,
     		};
     		int botao = JOptionPane.showConfirmDialog(null, fields,"Quantidade de canais", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
     		if (botao == JOptionPane.OK_OPTION) {
@@ -296,7 +278,7 @@ public class View extends JFrame implements ActionListener {
     			channelStr = channelStr.replaceAll("\\s","");
     			try {
     				channel = Integer.parseInt(channelStr);
-    				if (channel < 1 || channel > 10) channel = BAD_INPUT;
+    				if (channel < 1) channel = BAD_INPUT;
     			} catch (NumberFormatException e) {
     				channel = BAD_INPUT;
     			}
