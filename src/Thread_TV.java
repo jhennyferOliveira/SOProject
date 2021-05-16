@@ -35,7 +35,7 @@ class tvThread  {
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
-            int fav_canal = this.canal_favorito - 1; // Para acesso na array de requisições
+            int fav_canal = this.canal_favorito - 1; // Para acesso na array de requisiï¿½ï¿½es
             if (canal_atual != this.canal_favorito) {
                 if (requisicao_canal[fav_canal] == 0) {
                     requisicao_canal[fav_canal] += 1;
@@ -75,12 +75,12 @@ class tvThread  {
         }
 
         void simula_assistir(int tempo) {
-        	gui.addLog(this.id + " Está assistindo.");
+        	gui.addLog(this.id + " EstÃ¡ assistindo.");
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_assistir * 1000) {
             	long time2 = System.currentTimeMillis();
             	while (System.currentTimeMillis() - time2 < 300) {};
-            	gui.setImage(this.position, "/assets/assistindo1.png");            		
+            	gui.setImage(this.position, "/assets/assistindo1.png");
             	while (System.currentTimeMillis() - time2 < 600) {};
             	gui.setImage(this.position, "/assets/assistindo2.png");
             };
@@ -89,12 +89,12 @@ class tvThread  {
         }
 
         void simula_descansar(int tempo) {
-            gui.addLog(String.format("%s Está descansando", this.id));
+            gui.addLog(String.format("%s EstÃ¡ descansando", this.id));
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < this.tempo_descansar * 1000) {
             	long time2 = System.currentTimeMillis();
             	while (System.currentTimeMillis() - time2 < 300) {};
-            	gui.setImage(this.position, "/assets/dormindo2.png");            		
+            	gui.setImage(this.position, "/assets/dormindo2.png");
             	while (System.currentTimeMillis() - time2 < 600) {};
             	gui.setImage(this.position, "/assets/dormindo1.png");
             };
@@ -112,7 +112,9 @@ class tvThread  {
 				e.printStackTrace();
 			}
             quant_assistindo -= 1;
-            if (quant_assistindo == 0) tv.release();;
+            if (quant_assistindo == 0 && tv.availablePermits() == 0) {
+                tv.release();
+            }
             mutex.release();
         }
 
@@ -120,7 +122,6 @@ class tvThread  {
         void descansar(){
             simula_descansar(this.tempo_descansar);
         }
-
 
         public void run() {
             while (true) {
