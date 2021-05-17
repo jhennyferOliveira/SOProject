@@ -114,6 +114,8 @@ class tvThread  {
             quant_assistindo -= 1;
             if (quant_assistindo == 0 && tv.availablePermits() == 0) {
                 tv.release();
+                canal_atual = 0;
+                gui.setChannelLabel(canal_atual);
             }
             mutex.release();
         }
