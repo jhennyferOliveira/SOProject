@@ -91,10 +91,9 @@ public class View extends JFrame implements ActionListener {
     }
 
     public void configuraLabelCanal() {
-        labelTextoCanal = new JLabel();
-        labelTextoCanal.setText("5");
+        labelTextoCanal = new JLabel("5", SwingConstants.CENTER);
         labelTextoCanal.setLayout(null);
-        labelTextoCanal.setBounds(47,100,20,30);
+        labelTextoCanal.setBounds(33,100,50,30);
         labelTextoCanal.setFont(labelTextoCanal.getFont().deriveFont(28f));
         labelTextoCanal.setVisible(false);
         add(labelTextoCanal);
@@ -133,10 +132,6 @@ public class View extends JFrame implements ActionListener {
         ImageIcon icone = new ImageIcon(getClass().getResource(source));
         icone = resizeImage(icone, 94, 92);
     	hospedesLabels.get(position).setIcon(icone);
-    }
-    
-    public void setCardBackground(int position, Color color) {
-    	cards.get(position).setBackground(color);
     }
 
     public void setChannelLabel(int channel) {
